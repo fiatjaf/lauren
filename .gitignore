@@ -1,0 +1,8 @@
+lauren
+local/
+tmp/
+node_modules/
+static/tailwind-bundle.min.css
+yarn.lock
+package-lock.json
+*_templ.go

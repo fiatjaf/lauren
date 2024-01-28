@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^3.3.5"
+  },
+  "scripts": {
+    "postinstall": "tailwind -i tailwind.css -o static/tailwind-bundle.min.css --minify"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.10"
+  }
+}
