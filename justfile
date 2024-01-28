@@ -1,7 +1,7 @@
 export PATH := "./node_modules/.bin:" + env_var('PATH')
 
 dev:
-    fd --no-ignore-vcs 'go|templ|base.css' | entr -r bash -c 'templ generate && go build -o /tmp/lauren && /tmp/lauren'
+    fd --no-ignore-vcs 'go|templ|base.css' | entr -r bash -c 'templ generate && go build -o /tmp/lauren && godotenv /tmp/lauren'
 
 build: templ tailwind
     go build -o ./lauren
@@ -13,9 +13,6 @@ deploy: templ tailwind
     ssh lauren 'mv lauren/lauren-new lauren/lauren'
     ssh lauren 'systemctl start lauren'
 
-debug-build: templ tailwind
-    go build -tags=nocache -o /tmp/lauren .
-
 templ:
     templ generate
 
@@ -24,6 +21,3 @@ prettier:
 
 tailwind:
     tailwind -i base.css -o static/tailwind-bundle.min.css --minify
-
-test:
-    go test -tags=nocache

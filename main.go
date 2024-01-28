@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net/http"
 	"os"
 	"os/signal"
@@ -9,7 +8,6 @@ import (
 	"github.com/fiatjaf/eventstore/slicestore"
 	"github.com/fiatjaf/khatru"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/nbd-wtf/go-nostr"
 	"github.com/rs/cors"
 	"github.com/rs/zerolog"
 )
@@ -17,6 +15,9 @@ import (
 type Settings struct {
 	Port   string `envconfig:"PORT" default:"4777"`
 	Domain string `envconfig:"DOMAIN"`
+
+	LiveKitAPIKey    string `envconfig:"LK_API_KEY" required:"true"`
+	LiveKitAPISecret string `envconfig:"LK_API_SECRET" required:"true"`
 }
 
 var (
@@ -43,9 +44,10 @@ func main() {
 	relay.QueryEvents = append(relay.QueryEvents, db.QueryEvents)
 	relay.DeleteEvent = append(relay.DeleteEvent, db.DeleteEvent)
 	relay.RejectEvent = append(relay.RejectEvent,
-		func(context.Context, *nostr.Event) (bool, string) {
-			return true, "this relay is not writable"
-		},
+		rejectEvent,
+	)
+	relay.OnEphemeralEvent = append(relay.OnEphemeralEvent,
+		handleEphemeral,
 	)
 
 	// routes
